@@ -21,3 +21,9 @@ export const workModeLabels: Record<WorkMode, string> = {
   hybrid: "Híbrido",
   onsite: "Presencial",
 };
+
+export const workModeOptions = [
+  { value: "remote", label: workModeLabels.remote },
+  { value: "hybrid", label: workModeLabels.hybrid },
+  { value: "onsite", label: workModeLabels.onsite },
+] satisfies readonly { value: WorkMode; label: string }[];

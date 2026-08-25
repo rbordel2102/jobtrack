@@ -1,8 +1,24 @@
 import { ApplicationsPage } from "@/components/applications-page";
 import { AppShell } from "@/components/app-shell";
-import { applications } from "@/lib/mock-data";
 
-export default function ApplicationsRoute() {
+interface ApplicationsRouteProps {
+  searchParams: Promise<{ success?: string | string[] }>;
+}
+
+export default async function ApplicationsRoute({
+  searchParams,
+}: ApplicationsRouteProps) {
+  const params = await searchParams;
+  const success = Array.isArray(params.success)
+    ? params.success[0]
+    : params.success;
+  const successMessage =
+    success === "created"
+      ? "Candidatura creada correctamente."
+      : success === "updated"
+        ? "Candidatura actualizada correctamente."
+        : undefined;
+
   return (
     <AppShell
       activeNavigationItem="applications"
@@ -10,7 +26,7 @@ export default function ApplicationsRoute() {
       headerEyebrow="Proceso"
       headerTitle="Candidaturas"
     >
-      <ApplicationsPage applications={applications} />
+      <ApplicationsPage successMessage={successMessage} />
     </AppShell>
   );
 }

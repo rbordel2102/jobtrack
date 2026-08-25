@@ -7,3 +7,16 @@ export function formatApplicationDate(appliedAt: string): string {
     year: "numeric",
   }).format(date);
 }
+
+export function getCompanyInitials(company: string): string {
+  const initials = company
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((word) => word[0] ?? "")
+    .join("")
+    .toUpperCase();
+
+  return initials || "?";
+}

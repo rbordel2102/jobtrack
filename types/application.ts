@@ -7,16 +7,19 @@ export type ApplicationStatus =
 
 export type WorkMode = "remote" | "hybrid" | "onsite";
 
-export interface Application {
-  id: string;
+export interface ApplicationInput {
   company: string;
-  companyInitials: string;
   position: string;
   status: ApplicationStatus;
   location: string;
   workMode: WorkMode;
   appliedAt: string;
   technologies: readonly string[];
+}
+
+export interface Application extends ApplicationInput {
+  id: string;
+  companyInitials: string;
 }
 
 export type DashboardStatLabel =
