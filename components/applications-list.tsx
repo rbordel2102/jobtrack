@@ -1,7 +1,9 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 
+import { useApplications } from "@/components/applications-provider";
 import { Icon } from "@/components/icon";
 import {
   applicationStatusLabels,
@@ -9,7 +11,7 @@ import {
   workModeLabels,
 } from "@/lib/application-config";
 import { formatApplicationDate } from "@/lib/application-utils";
-import type { Application, ApplicationStatus } from "@/types/application";
+import type { ApplicationStatus } from "@/types/application";
 
 const statusStyles: Record<ApplicationStatus, string> = {
   applied: "bg-blue-50 text-blue-700 ring-blue-600/10",
@@ -19,11 +21,8 @@ const statusStyles: Record<ApplicationStatus, string> = {
   rejected: "bg-rose-50 text-rose-700 ring-rose-600/10",
 };
 
-interface ApplicationsListProps {
-  applications: readonly Application[];
-}
-
-export function ApplicationsList({ applications }: ApplicationsListProps) {
+export function ApplicationsList() {
+  const { applications } = useApplications();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<ApplicationStatus | "all">(
     "all",
@@ -182,6 +181,15 @@ export function ApplicationsList({ applications }: ApplicationsListProps) {
                       </li>
                     ))}
                   </ul>
+                </div>
+
+                <div className="mt-5 flex justify-end">
+                  <Link
+                    className="inline-flex min-h-9 items-center justify-center rounded-lg px-3 text-xs font-semibold text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-950"
+                    href={`/applications/${application.id}/edit`}
+                  >
+                    Editar
+                  </Link>
                 </div>
               </article>
             </li>
