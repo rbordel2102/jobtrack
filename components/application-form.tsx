@@ -1,38 +1,26 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useActionState, useState } from "react";
 import type { FormEvent } from "react";
 
-import { useApplications } from "@/components/applications-provider";
 import {
   applicationStatusOptions,
   workModeOptions,
 } from "@/lib/application-config";
 import {
-  getApplicationFormValues,
+  initialApplicationActionState,
+  type ApplicationFormAction,
   type ApplicationFormErrors,
   type ApplicationFormValues,
-  toApplicationInput,
   validateApplicationForm,
 } from "@/lib/application-validation";
 import type { ApplicationStatus, WorkMode } from "@/types/application";
 
-type ApplicationFormProps =
-  | {
-      applicationId?: never;
-      initialValues: ApplicationFormValues;
-      mode: "create";
-    }
-  | {
-      applicationId: string;
-      initialValues: ApplicationFormValues;
-      mode: "edit";
-    };
-
-interface EditApplicationFormProps {
-  applicationId: string;
+interface ApplicationFormProps {
+  action: ApplicationFormAction;
+  initialValues: ApplicationFormValues;
+  mode: "create" | "edit";
 }
 
 interface FieldErrorProps {
@@ -56,16 +44,28 @@ function FieldError({ id, message }: FieldErrorProps) {
   );
 }
 
-export function ApplicationForm(props: ApplicationFormProps) {
-  const router = useRouter();
-  const { createApplication, updateApplication } = useApplications();
+export function ApplicationForm({
+  action,
+  initialValues,
+  mode,
+}: ApplicationFormProps) {
   const [formValues, setFormValues] = useState<ApplicationFormValues>(() => ({
-    ...props.initialValues,
+    ...initialValues,
   }));
-  const [errors, setErrors] = useState<ApplicationFormErrors>({});
+  const [clientErrors, setClientErrors] = useState<ApplicationFormErrors>({});
+  const [serverState, formAction, isPending] = useActionState(
+    action,
+    initialApplicationActionState,
+  );
+  const errors = { ...serverState.fieldErrors, ...clientErrors };
+  const isEditMode = mode === "edit";
+  const title = isEditMode ? "Editar candidatura" : "Nueva candidatura";
+  const description = isEditMode
+    ? "Actualiza la información de esta oportunidad."
+    : "Añade una nueva oportunidad a tu proceso de búsqueda.";
 
   function clearFieldError(field: keyof ApplicationFormValues) {
-    setErrors((currentErrors) => {
+    setClientErrors((currentErrors) => {
       if (!currentErrors[field]) {
         return currentErrors;
       }
@@ -88,32 +88,16 @@ export function ApplicationForm(props: ApplicationFormProps) {
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
     const validationErrors = validateApplicationForm(formValues);
 
     if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
+      event.preventDefault();
+      setClientErrors(validationErrors);
       return;
     }
 
-    const input = toApplicationInput(formValues);
-
-    if (props.mode === "create") {
-      createApplication(input);
-      router.push("/applications?success=created");
-      return;
-    }
-
-    updateApplication(props.applicationId, input);
-    router.push("/applications?success=updated");
+    setClientErrors({});
   }
-
-  const isEditMode = props.mode === "edit";
-  const title = isEditMode ? "Editar candidatura" : "Nueva candidatura";
-  const description = isEditMode
-    ? "Actualiza la información de esta oportunidad."
-    : "Añade una nueva oportunidad a tu proceso de búsqueda.";
 
   return (
     <section
@@ -130,7 +114,22 @@ export function ApplicationForm(props: ApplicationFormProps) {
         <p className="mt-1.5 text-sm leading-6 text-slate-500">{description}</p>
       </div>
 
-      <form className="mt-6 space-y-5" noValidate onSubmit={handleSubmit}>
+      {serverState.formError ? (
+        <p
+          aria-live="polite"
+          className="mt-5 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700"
+          role="alert"
+        >
+          {serverState.formError}
+        </p>
+      ) : null}
+
+      <form
+        action={formAction}
+        className="mt-6 space-y-5"
+        noValidate
+        onSubmit={handleSubmit}
+      >
         <div className="grid gap-5 sm:grid-cols-2">
           <div>
             <label
@@ -144,6 +143,7 @@ export function ApplicationForm(props: ApplicationFormProps) {
               aria-invalid={Boolean(errors.company)}
               className="mt-2 h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-slate-400 focus:bg-white focus:ring-2 focus:ring-slate-950/10"
               id="company"
+              name="company"
               onChange={(event) => updateField("company", event.target.value)}
               required
               type="text"
@@ -164,6 +164,7 @@ export function ApplicationForm(props: ApplicationFormProps) {
               aria-invalid={Boolean(errors.position)}
               className="mt-2 h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-slate-400 focus:bg-white focus:ring-2 focus:ring-slate-950/10"
               id="position"
+              name="position"
               onChange={(event) => updateField("position", event.target.value)}
               required
               type="text"
@@ -180,8 +181,11 @@ export function ApplicationForm(props: ApplicationFormProps) {
               Estado
             </label>
             <select
+              aria-describedby={errors.status ? "status-error" : undefined}
+              aria-invalid={Boolean(errors.status)}
               className="mt-2 h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-950 outline-none transition focus:border-slate-400 focus:bg-white focus:ring-2 focus:ring-slate-950/10"
               id="status"
+              name="status"
               onChange={(event) =>
                 updateField(
                   "status",
@@ -197,6 +201,7 @@ export function ApplicationForm(props: ApplicationFormProps) {
                 </option>
               ))}
             </select>
+            <FieldError id="status-error" message={errors.status} />
           </div>
 
           <div>
@@ -211,6 +216,7 @@ export function ApplicationForm(props: ApplicationFormProps) {
               aria-invalid={Boolean(errors.location)}
               className="mt-2 h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-slate-400 focus:bg-white focus:ring-2 focus:ring-slate-950/10"
               id="location"
+              name="location"
               onChange={(event) => updateField("location", event.target.value)}
               required
               type="text"
@@ -227,8 +233,11 @@ export function ApplicationForm(props: ApplicationFormProps) {
               Modalidad
             </label>
             <select
+              aria-describedby={errors.workMode ? "workMode-error" : undefined}
+              aria-invalid={Boolean(errors.workMode)}
               className="mt-2 h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-950 outline-none transition focus:border-slate-400 focus:bg-white focus:ring-2 focus:ring-slate-950/10"
               id="workMode"
+              name="workMode"
               onChange={(event) =>
                 updateField("workMode", event.target.value as WorkMode)
               }
@@ -241,6 +250,7 @@ export function ApplicationForm(props: ApplicationFormProps) {
                 </option>
               ))}
             </select>
+            <FieldError id="workMode-error" message={errors.workMode} />
           </div>
 
           <div>
@@ -253,8 +263,9 @@ export function ApplicationForm(props: ApplicationFormProps) {
             <input
               aria-describedby={errors.appliedAt ? "appliedAt-error" : undefined}
               aria-invalid={Boolean(errors.appliedAt)}
-              className="mt-2 h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-950 outline-none transition focus:border-slate-400 focus:bg-white focus:ring-2 focus:ring-slate-950/10"
+              className="mt-2 h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-slate-400 focus:bg-white focus:ring-2 focus:ring-slate-950/10"
               id="appliedAt"
+              name="appliedAt"
               onChange={(event) => updateField("appliedAt", event.target.value)}
               required
               type="date"
@@ -280,6 +291,7 @@ export function ApplicationForm(props: ApplicationFormProps) {
             aria-invalid={Boolean(errors.technologies)}
             className="mt-2 h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-slate-400 focus:bg-white focus:ring-2 focus:ring-slate-950/10"
             id="technologies"
+            name="technologies"
             onChange={(event) =>
               updateField("technologies", event.target.value)
             }
@@ -302,54 +314,19 @@ export function ApplicationForm(props: ApplicationFormProps) {
             Cancelar
           </Link>
           <button
-            className="inline-flex min-h-11 items-center justify-center rounded-xl bg-slate-950 px-4 text-sm font-semibold text-white transition-colors hover:bg-slate-800"
+            aria-busy={isPending}
+            className="inline-flex min-h-11 items-center justify-center rounded-xl bg-slate-950 px-4 text-sm font-semibold text-white transition-colors hover:bg-slate-800 disabled:cursor-wait disabled:opacity-60"
+            disabled={isPending}
             type="submit"
           >
-            {isEditMode ? "Guardar cambios" : "Crear candidatura"}
+            {isPending
+              ? "Guardando..."
+              : isEditMode
+                ? "Guardar cambios"
+                : "Crear candidatura"}
           </button>
         </div>
       </form>
     </section>
-  );
-}
-
-export function EditApplicationForm({
-  applicationId,
-}: EditApplicationFormProps) {
-  const { findApplication } = useApplications();
-  const application = findApplication(applicationId);
-
-  if (!application) {
-    return (
-      <section
-        aria-labelledby="application-not-found-heading"
-        className="mx-auto max-w-2xl rounded-2xl border border-slate-200 bg-white px-5 py-14 text-center sm:px-6"
-      >
-        <h2
-          className="text-lg font-semibold text-slate-950"
-          id="application-not-found-heading"
-        >
-          No se ha encontrado la candidatura
-        </h2>
-        <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
-          Puede que la candidatura ya no exista o que el enlace no sea válido.
-        </p>
-        <Link
-          className="mt-6 inline-flex min-h-11 items-center justify-center rounded-xl bg-slate-950 px-4 text-sm font-semibold text-white transition-colors hover:bg-slate-800"
-          href="/applications"
-        >
-          Volver a candidaturas
-        </Link>
-      </section>
-    );
-  }
-
-  return (
-    <ApplicationForm
-      key={application.id}
-      applicationId={application.id}
-      initialValues={getApplicationFormValues(application)}
-      mode="edit"
-    />
   );
 }

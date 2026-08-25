@@ -1,12 +1,19 @@
 import Link from "next/link";
 
 import { ApplicationsList } from "@/components/applications-list";
+import type { Application } from "@/types/application";
 
 interface ApplicationsPageProps {
+  applications: readonly Application[];
+  loadError?: boolean;
   successMessage?: string;
 }
 
-export function ApplicationsPage({ successMessage }: ApplicationsPageProps) {
+export function ApplicationsPage({
+  applications,
+  loadError = false,
+  successMessage,
+}: ApplicationsPageProps) {
   return (
     <div className="space-y-6">
       <div className="flex justify-end">
@@ -27,7 +34,16 @@ export function ApplicationsPage({ successMessage }: ApplicationsPageProps) {
         </p>
       ) : null}
 
-      <ApplicationsList />
+      {loadError ? (
+        <p
+          className="rounded-2xl border border-rose-200 bg-rose-50 px-5 py-10 text-center text-sm font-medium text-rose-700 sm:px-6"
+          role="alert"
+        >
+          No se han podido cargar las candidaturas. Inténtalo de nuevo más tarde.
+        </p>
+      ) : (
+        <ApplicationsList applications={applications} />
+      )}
     </div>
   );
 }

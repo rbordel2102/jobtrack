@@ -1,0 +1,35 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Application {
+  id           String            @id @default(cuid())
+  company      String
+  position     String
+  status       ApplicationStatus
+  location     String
+  workMode     WorkMode
+  appliedAt    DateTime          @db.Date
+  technologies String[]
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+}
+
+enum ApplicationStatus {
+  applied
+  interview
+  technical_test
+  offer
+  rejected
+}
+
+enum WorkMode {
+  remote
+  hybrid
+  onsite
+}

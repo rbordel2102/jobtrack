@@ -1,5 +1,9 @@
 import { ApplicationsPage } from "@/components/applications-page";
 import { AppShell } from "@/components/app-shell";
+import { getApplications } from "@/lib/application-data";
+import type { Application } from "@/types/application";
+
+export const dynamic = "force-dynamic";
 
 interface ApplicationsRouteProps {
   searchParams: Promise<{ success?: string | string[] }>;
@@ -18,6 +22,14 @@ export default async function ApplicationsRoute({
       : success === "updated"
         ? "Candidatura actualizada correctamente."
         : undefined;
+  let applications: readonly Application[] = [];
+  let loadError = false;
+
+  try {
+    applications = await getApplications();
+  } catch {
+    loadError = true;
+  }
 
   return (
     <AppShell
@@ -26,7 +38,11 @@ export default async function ApplicationsRoute({
       headerEyebrow="Proceso"
       headerTitle="Candidaturas"
     >
-      <ApplicationsPage successMessage={successMessage} />
+      <ApplicationsPage
+        applications={applications}
+        loadError={loadError}
+        successMessage={successMessage}
+      />
     </AppShell>
   );
 }

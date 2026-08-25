@@ -1,15 +1,44 @@
 import { AppShell } from "@/components/app-shell";
 import { Dashboard } from "@/components/dashboard";
-import { dashboardStats, recentApplications } from "@/lib/mock-data";
+import { getApplications } from "@/lib/application-data";
+import { getDashboardStats } from "@/lib/application-utils";
+import type { Application } from "@/types/application";
 
-export default function Home() {
+export const dynamic = "force-dynamic";
+
+export default async function Home() {
+  let applications: readonly Application[];
+
+  try {
+    applications = await getApplications();
+  } catch {
+    return (
+      <AppShell
+        activeNavigationItem="dashboard"
+        headerEyebrow="Resumen"
+        headerTitle="Panel"
+      >
+        <p
+          className="rounded-2xl border border-rose-200 bg-rose-50 px-5 py-10 text-center text-sm font-medium text-rose-700 sm:px-6"
+          role="alert"
+        >
+          No se han podido cargar los datos del panel. Inténtalo de nuevo más
+          tarde.
+        </p>
+      </AppShell>
+    );
+  }
+
   return (
     <AppShell
       activeNavigationItem="dashboard"
       headerEyebrow="Resumen"
       headerTitle="Panel"
     >
-      <Dashboard stats={dashboardStats} applications={recentApplications} />
+      <Dashboard
+        applications={applications.slice(0, 5)}
+        stats={getDashboardStats(applications)}
+      />
     </AppShell>
   );
 }
