@@ -1,30 +1,28 @@
 import Link from "next/link";
 
-import { Icon, type IconName } from "@/components/icon";
-
-interface NavigationItem {
-  label: string;
-  icon: IconName;
-  href?: string;
-  active?: boolean;
-}
-
-const navigationItems = [
-  { label: "Panel", icon: "grid", href: "/", active: true },
-  { label: "Candidaturas", icon: "briefcase" },
-  { label: "Analíticas", icon: "chart" },
-  { label: "Configuración", icon: "settings" },
-] satisfies readonly NavigationItem[];
+import { Icon } from "@/components/icon";
+import {
+  navigationItems,
+  type NavigationItem,
+  type NavigationItemId,
+} from "@/lib/navigation";
 
 const baseItemClasses =
   "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors";
 
-function NavigationLink({ item }: { item: NavigationItem }) {
+interface NavigationLinkProps {
+  activeNavigationItem: NavigationItemId;
+  item: NavigationItem;
+}
+
+function NavigationLink({ activeNavigationItem, item }: NavigationLinkProps) {
+  const isActive = item.id === activeNavigationItem;
+
   if (item.href) {
     return (
       <Link
-        aria-current={item.active ? "page" : undefined}
-        className={`${baseItemClasses} bg-slate-100 text-slate-950`}
+        aria-current={isActive ? "page" : undefined}
+        className={`${baseItemClasses} ${isActive ? "bg-slate-100 text-slate-950" : "text-slate-500 hover:bg-slate-50 hover:text-slate-950"}`}
         href={item.href}
       >
         <Icon className="h-[18px] w-[18px]" name={item.icon} />
@@ -47,11 +45,15 @@ function NavigationLink({ item }: { item: NavigationItem }) {
   );
 }
 
-export function Sidebar() {
+interface SidebarProps {
+  activeNavigationItem: NavigationItemId;
+}
+
+export function Sidebar({ activeNavigationItem }: SidebarProps) {
   return (
     <aside
       aria-label="Barra lateral"
-      className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-slate-200 bg-white lg:flex"
+      className="sticky top- hidden h-screen w-70 shrink-0 flex-col border-r border-slate-200 bg-white lg:flex"
     >
       <div className="flex h-full flex-col px-4 py-5">
         <Link
@@ -73,7 +75,10 @@ export function Sidebar() {
           <ul className="mt-3 space-y-1">
             {navigationItems.map((item) => (
               <li key={item.label}>
-                <NavigationLink item={item} />
+                <NavigationLink
+                  activeNavigationItem={activeNavigationItem}
+                  item={item}
+                />
               </li>
             ))}
           </ul>

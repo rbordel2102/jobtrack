@@ -4,7 +4,11 @@ import { dashboardStats, recentApplications } from "@/lib/mock-data";
 
 export default function Home() {
   return (
-    <AppShell>
+    <AppShell
+      activeNavigationItem="dashboard"
+      headerEyebrow="Resumen"
+      headerTitle="Panel"
+    >
       <Dashboard stats={dashboardStats} applications={recentApplications} />
     </AppShell>
   );
