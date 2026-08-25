@@ -1,22 +1,16 @@
 import Link from "next/link";
 
-import { Icon, type IconName } from "@/components/icon";
+import { Icon } from "@/components/icon";
+import {
+  navigationItems,
+  type NavigationItemId,
+} from "@/lib/navigation";
 
-interface MobileNavigationItem {
-  label: string;
-  icon: IconName;
-  href?: string;
-  active?: boolean;
+interface MobileNavProps {
+  activeNavigationItem: NavigationItemId;
 }
 
-const navigationItems = [
-  { label: "Panel", icon: "grid", href: "/", active: true },
-  { label: "Candidaturas", icon: "briefcase" },
-  { label: "Analíticas", icon: "chart" },
-  { label: "Configuración", icon: "settings" },
-] satisfies readonly MobileNavigationItem[];
-
-export function MobileNav() {
+export function MobileNav({ activeNavigationItem }: MobileNavProps) {
   return (
     <nav
       aria-label="Navegación principal móvil"
@@ -27,8 +21,10 @@ export function MobileNav() {
           <li className="min-w-0 flex-1" key={item.label}>
             {item.href ? (
               <Link
-                aria-current={item.active ? "page" : undefined}
-                className="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl bg-slate-100 px-2 text-[11px] font-semibold text-slate-950"
+                aria-current={
+                  item.id === activeNavigationItem ? "page" : undefined
+                }
+                className={`flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-2 text-[11px] font-semibold ${item.id === activeNavigationItem ? "bg-slate-100 text-slate-950" : "text-slate-500 hover:bg-slate-50 hover:text-slate-950"}`}
                 href={item.href}
               >
                 <Icon className="h-4 w-4" name={item.icon} />

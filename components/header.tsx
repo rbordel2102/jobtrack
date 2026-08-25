@@ -1,16 +1,27 @@
 import { Icon } from "@/components/icon";
 
-export function Header() {
+interface HeaderProps {
+  description?: string;
+  eyebrow: string;
+  title: string;
+}
+
+export function Header({ description, eyebrow, title }: HeaderProps) {
   return (
     <header className="border-b border-slate-200 bg-white">
-      <div className="mx-auto flex min-h-[88px] w-full max-w-[1500px] items-center justify-between gap-6 px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto flex min-h-[88px] w-full max-w-[1500px] items-center justify-between gap-6 px-4 py-5 sm:px-6 lg:px-8">
         <div>
           <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">
-            Resumen
+            {eyebrow}
           </p>
           <h1 className="mt-1 text-2xl font-semibold tracking-tight text-slate-950 sm:text-[28px]">
-            Panel
+            {title}
           </h1>
+          {description ? (
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
+              {description}
+            </p>
+          ) : null}
         </div>
 
         <div className="flex items-center gap-3 sm:gap-5">

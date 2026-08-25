@@ -1,16 +1,22 @@
-export type ApplicationStatus = "Enviada" | "Entrevista" | "Oferta" | "Rechazada";
+export type ApplicationStatus =
+  | "applied"
+  | "interview"
+  | "technical_test"
+  | "offer"
+  | "rejected";
 
-export type LogoTone = "blue" | "violet" | "amber" | "emerald" | "rose";
+export type WorkMode = "remote" | "hybrid" | "onsite";
 
 export interface Application {
   id: string;
   company: string;
   companyInitials: string;
-  role: string;
+  position: string;
   status: ApplicationStatus;
+  location: string;
+  workMode: WorkMode;
   appliedAt: string;
-  appliedLabel: string;
-  logoTone: LogoTone;
+  technologies: readonly string[];
 }
 
 export type DashboardStatLabel =
