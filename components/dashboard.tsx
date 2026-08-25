@@ -23,8 +23,8 @@ export function Dashboard({ stats, applications }: DashboardProps) {
             Tu búsqueda de empleo, de un vistazo.
           </h2>
           <p className="mt-3 max-w-xl text-sm leading-6 text-slate-500 sm:text-base">
-            Organiza tus candidaturas, ten claros tus próximos pasos y mantén
-            el ritmo.
+            Organiza tus candidaturas, ten claros tus próximos pasos y mantén el
+            ritmo.
           </p>
         </div>
         <div className="inline-flex w-fit items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700">
@@ -46,7 +46,7 @@ export function Dashboard({ stats, applications }: DashboardProps) {
               Estado del proceso
             </h2>
           </div>
-          <p className="text-sm text-slate-400">Comparado con el mes anterior</p>
+          <p className="text-sm text-slate-400">Datos actuales</p>
         </div>
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {stats.map((stat) => (

@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useState } from "react";
 
-import { useApplications } from "@/components/applications-provider";
 import { Icon } from "@/components/icon";
 import {
   applicationStatusLabels,
@@ -11,7 +10,7 @@ import {
   workModeLabels,
 } from "@/lib/application-config";
 import { formatApplicationDate } from "@/lib/application-utils";
-import type { ApplicationStatus } from "@/types/application";
+import type { Application, ApplicationStatus } from "@/types/application";
 
 const statusStyles: Record<ApplicationStatus, string> = {
   applied: "bg-blue-50 text-blue-700 ring-blue-600/10",
@@ -21,8 +20,11 @@ const statusStyles: Record<ApplicationStatus, string> = {
   rejected: "bg-rose-50 text-rose-700 ring-rose-600/10",
 };
 
-export function ApplicationsList() {
-  const { applications } = useApplications();
+interface ApplicationsListProps {
+  applications: readonly Application[];
+}
+
+export function ApplicationsList({ applications }: ApplicationsListProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<ApplicationStatus | "all">(
     "all",
@@ -30,10 +32,12 @@ export function ApplicationsList() {
   const normalizedSearchTerm = searchTerm.trim().toLocaleLowerCase("es-ES");
 
   const filteredApplications = applications.filter((application) => {
+    const normalizedCompany = application.company.toLocaleLowerCase("es-ES");
+    const normalizedPosition = application.position.toLocaleLowerCase("es-ES");
     const matchesSearch =
       normalizedSearchTerm.length === 0 ||
-      application.company.toLocaleLowerCase("es-ES").includes(normalizedSearchTerm) ||
-      application.position.toLocaleLowerCase("es-ES").includes(normalizedSearchTerm);
+      normalizedCompany.includes(normalizedSearchTerm) ||
+      normalizedPosition.includes(normalizedSearchTerm);
     const matchesStatus =
       statusFilter === "all" || application.status === statusFilter;
 
@@ -83,7 +87,7 @@ export function ApplicationsList() {
           </span>
         </label>
 
-        <label className="sm:w-56">
+        <label className="min-w-0 sm:w-56 sm:shrink-0">
           <span className="mb-1.5 block text-xs font-semibold text-slate-600">
             Estado
           </span>

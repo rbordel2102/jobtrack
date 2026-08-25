@@ -1,5 +1,6 @@
 import { ApplicationForm } from "@/components/application-form";
 import { AppShell } from "@/components/app-shell";
+import { createApplicationAction } from "@/app/applications/actions";
 import { emptyApplicationFormValues } from "@/lib/application-validation";
 
 export default function NewApplicationRoute() {
@@ -11,6 +12,7 @@ export default function NewApplicationRoute() {
       headerTitle="Nueva candidatura"
     >
       <ApplicationForm
+        action={createApplicationAction}
         initialValues={emptyApplicationFormValues}
         mode="create"
       />

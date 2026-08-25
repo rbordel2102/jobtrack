@@ -4,6 +4,10 @@ import type {
   ApplicationStatus,
   WorkMode,
 } from "@/types/application";
+import {
+  applicationStatusOptions,
+  workModeOptions,
+} from "@/lib/application-config";
 
 export interface ApplicationFormValues {
   company: string;
@@ -18,6 +22,20 @@ export interface ApplicationFormValues {
 export type ApplicationFormErrors = Partial<
   Record<keyof ApplicationFormValues, string>
 >;
+
+export interface ApplicationActionState {
+  fieldErrors: ApplicationFormErrors;
+  formError?: string;
+}
+
+export type ApplicationFormAction = (
+  previousState: ApplicationActionState,
+  formData: FormData,
+) => Promise<ApplicationActionState>;
+
+export const initialApplicationActionState: ApplicationActionState = {
+  fieldErrors: {},
+};
 
 export const emptyApplicationFormValues = {
   company: "",
@@ -50,6 +68,62 @@ export function parseTechnologies(value: string): readonly string[] {
     .filter(Boolean);
 }
 
+function getFormDataString(formData: FormData, field: string): string {
+  const value = formData.get(field);
+
+  return typeof value === "string" ? value : "";
+}
+
+function isApplicationStatus(value: string): value is ApplicationStatus {
+  return applicationStatusOptions.some((option) => option.value === value);
+}
+
+function isWorkMode(value: string): value is WorkMode {
+  return workModeOptions.some((option) => option.value === value);
+}
+
+export function getApplicationFormValuesFromFormData(formData: FormData): {
+  values: ApplicationFormValues;
+  errors: ApplicationFormErrors;
+} {
+  const statusValue = getFormDataString(formData, "status");
+  const workModeValue = getFormDataString(formData, "workMode");
+  const errors: ApplicationFormErrors = {};
+
+  if (!isApplicationStatus(statusValue)) {
+    errors.status = "Selecciona un estado válido.";
+  }
+
+  if (!isWorkMode(workModeValue)) {
+    errors.workMode = "Selecciona una modalidad válida.";
+  }
+
+  return {
+    values: {
+      company: getFormDataString(formData, "company"),
+      position: getFormDataString(formData, "position"),
+      status: isApplicationStatus(statusValue) ? statusValue : "applied",
+      location: getFormDataString(formData, "location"),
+      workMode: isWorkMode(workModeValue) ? workModeValue : "remote",
+      appliedAt: getFormDataString(formData, "appliedAt"),
+      technologies: getFormDataString(formData, "technologies"),
+    },
+    errors,
+  };
+}
+
+function isValidApplicationDate(value: string): boolean {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    return false;
+  }
+
+  const date = new Date(`${value}T00:00:00.000Z`);
+
+  return (
+    !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value
+  );
+}
+
 export function validateApplicationForm(
   values: ApplicationFormValues,
 ): ApplicationFormErrors {
@@ -69,6 +143,8 @@ export function validateApplicationForm(
 
   if (!values.appliedAt.trim()) {
     errors.appliedAt = "Selecciona la fecha de candidatura.";
+  } else if (!isValidApplicationDate(values.appliedAt.trim())) {
+    errors.appliedAt = "Introduce una fecha de candidatura válida.";
   }
 
   if (parseTechnologies(values.technologies).length === 0) {
