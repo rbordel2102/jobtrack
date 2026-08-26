@@ -5,12 +5,14 @@ import type { Application } from "@/types/application";
 
 interface ApplicationsPageProps {
   applications: readonly Application[];
+  errorMessage?: string;
   loadError?: boolean;
   successMessage?: string;
 }
 
 export function ApplicationsPage({
   applications,
+  errorMessage,
   loadError = false,
   successMessage,
 }: ApplicationsPageProps) {
@@ -31,6 +33,15 @@ export function ApplicationsPage({
           role="status"
         >
           {successMessage}
+        </p>
+      ) : null}
+
+      {errorMessage ? (
+        <p
+          className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700"
+          role="alert"
+        >
+          {errorMessage}
         </p>
       ) : null}
 

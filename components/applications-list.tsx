@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 
 import { Icon } from "@/components/icon";
+import { DeleteApplicationButton } from "@/components/delete-application-button";
 import {
   applicationStatusLabels,
   applicationStatusOptions,
@@ -187,13 +188,14 @@ export function ApplicationsList({ applications }: ApplicationsListProps) {
                   </ul>
                 </div>
 
-                <div className="mt-5 flex justify-end">
+                <div className="mt-5 flex flex-wrap justify-end gap-1 border-t border-slate-100 pt-4">
                   <Link
                     className="inline-flex min-h-9 items-center justify-center rounded-lg px-3 text-xs font-semibold text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-950"
                     href={`/applications/${application.id}/edit`}
                   >
                     Editar
                   </Link>
+                  <DeleteApplicationButton applicationId={application.id} />
                 </div>
               </article>
             </li>

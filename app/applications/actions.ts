@@ -5,8 +5,10 @@ import { redirect } from "next/navigation";
 
 import {
   createApplication as createApplicationRecord,
+  deleteApplication as deleteApplicationRecord,
   updateApplication as updateApplicationRecord,
 } from "@/lib/application-data";
+import { requireSession } from "@/lib/auth-utils";
 import {
   getApplicationFormValuesFromFormData,
   type ApplicationActionState,
@@ -45,6 +47,8 @@ export async function createApplicationAction(
 ): Promise<ApplicationActionState> {
   void previousState;
 
+  const session = await requireSession();
+
   const validation = getValidationState(formData);
 
   if ("state" in validation) {
@@ -52,7 +56,7 @@ export async function createApplicationAction(
   }
 
   try {
-    await createApplicationRecord(validation.input);
+    await createApplicationRecord(session.user.id, validation.input);
   } catch {
     return {
       fieldErrors: {},
@@ -72,6 +76,8 @@ export async function updateApplicationAction(
 ): Promise<ApplicationActionState> {
   void previousState;
 
+  const session = await requireSession();
+
   const validation = getValidationState(formData);
 
   if ("state" in validation) {
@@ -79,7 +85,18 @@ export async function updateApplicationAction(
   }
 
   try {
-    await updateApplicationRecord(applicationId, validation.input);
+    const application = await updateApplicationRecord(
+      applicationId,
+      session.user.id,
+      validation.input,
+    );
+
+    if (!application) {
+      return {
+        fieldErrors: {},
+        formError: "No se ha encontrado la candidatura que quieres editar.",
+      };
+    }
   } catch (error: unknown) {
     if (isRecordNotFoundError(error)) {
       return {
@@ -97,4 +114,29 @@ export async function updateApplicationAction(
   revalidatePath("/applications");
   revalidatePath("/");
   redirect("/applications?success=updated");
+}
+
+export async function deleteApplicationAction(formData: FormData): Promise<void> {
+  const session = await requireSession();
+  const applicationId = formData.get("applicationId");
+
+  if (typeof applicationId !== "string" || applicationId.length === 0) {
+    redirect("/applications?error=not_found");
+  }
+
+  let deleted = false;
+
+  try {
+    deleted = await deleteApplicationRecord(applicationId, session.user.id);
+  } catch {
+    redirect("/applications?error=database");
+  }
+
+  if (!deleted) {
+    redirect("/applications?error=not_found");
+  }
+
+  revalidatePath("/applications");
+  revalidatePath("/");
+  redirect("/applications?success=deleted");
 }

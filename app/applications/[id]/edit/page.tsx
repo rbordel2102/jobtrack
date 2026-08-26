@@ -5,6 +5,7 @@ import { ApplicationForm } from "@/components/application-form";
 import { AppShell } from "@/components/app-shell";
 import { getApplication } from "@/lib/application-data";
 import { getApplicationFormValues } from "@/lib/application-validation";
+import { requireSession } from "@/lib/auth-utils";
 import type { Application } from "@/types/application";
 
 export const dynamic = "force-dynamic";
@@ -49,12 +50,13 @@ function ApplicationMessage({
 export default async function EditApplicationRoute({
   params,
 }: EditApplicationRouteProps) {
+  const session = await requireSession();
   const { id } = await params;
   let application: Application | null = null;
   let loadError = false;
 
   try {
-    application = await getApplication(id);
+    application = await getApplication(id, session.user.id);
   } catch {
     loadError = true;
   }
@@ -65,6 +67,8 @@ export default async function EditApplicationRoute({
       headerDescription="Revisa y actualiza la información de esta oportunidad."
       headerEyebrow="Proceso"
       headerTitle="Editar candidatura"
+      userEmail={session.user.email}
+      userName={session.user.name}
     >
       {loadError ? (
         <ApplicationMessage
