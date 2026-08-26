@@ -1,12 +1,34 @@
 import { Icon } from "@/components/icon";
+import { LogoutButton } from "@/components/logout-button";
 
 interface HeaderProps {
   description?: string;
   eyebrow: string;
   title: string;
+  userEmail: string;
+  userName: string;
 }
 
-export function Header({ description, eyebrow, title }: HeaderProps) {
+function getUserInitials(name: string): string {
+  const initials = name
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part.charAt(0))
+    .join("")
+    .toUpperCase();
+
+  return initials || "U";
+}
+
+export function Header({
+  description,
+  eyebrow,
+  title,
+  userEmail,
+  userName,
+}: HeaderProps) {
   return (
     <header className="border-b border-slate-200 bg-white">
       <div className="mx-auto flex min-h-[88px] w-full max-w-[1500px] items-center justify-between gap-6 px-4 py-5 sm:px-6 lg:px-8">
@@ -35,13 +57,20 @@ export function Header({ description, eyebrow, title }: HeaderProps) {
               ⌘ K
             </kbd>
           </div>
+          <div className="hidden text-right sm:block">
+            <p className="max-w-40 truncate text-sm font-semibold text-slate-950">
+              {userName}
+            </p>
+            <p className="max-w-40 truncate text-xs text-slate-400">{userEmail}</p>
+          </div>
           <span
-            aria-label="Perfil"
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-950 text-xs font-semibold text-white"
-            title="Perfil"
+            aria-label={`Perfil de ${userName}`}
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-950 text-xs font-semibold text-white"
+            title={userName}
           >
-            JD
+            {getUserInitials(userName)}
           </span>
+          <LogoutButton />
         </div>
       </div>
     </header>

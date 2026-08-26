@@ -93,11 +93,24 @@ const seedApplications = [
     appliedAt: new Date("2026-08-07T00:00:00.000Z"),
     technologies: ["React", "GraphQL", "Testing"],
   },
-] satisfies Prisma.ApplicationCreateManyInput[];
+] satisfies Omit<Prisma.ApplicationCreateManyInput, "userId">[];
 
 async function seed() {
+  const user = await prisma.user.findFirst({
+    orderBy: { createdAt: "asc" },
+    select: { id: true },
+  });
+
+  if (!user) {
+    console.log("No hay usuarios para asociar las candidaturas de desarrollo.");
+    return;
+  }
+
   await prisma.application.createMany({
-    data: seedApplications,
+    data: seedApplications.map((application) => ({
+      ...application,
+      userId: user.id,
+    })) satisfies Prisma.ApplicationCreateManyInput[],
     skipDuplicates: true,
   });
 }

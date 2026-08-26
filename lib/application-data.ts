@@ -33,8 +33,11 @@ function toDatabaseDate(appliedAt: string): Date {
   return new Date(`${appliedAt}T00:00:00.000Z`);
 }
 
-export async function getApplications(): Promise<readonly Application[]> {
+export async function getApplications(
+  userId: string,
+): Promise<readonly Application[]> {
   const records = await prisma.application.findMany({
+    where: { userId },
     orderBy: [{ appliedAt: "desc" }, { createdAt: "desc" }],
   });
 
@@ -43,15 +46,17 @@ export async function getApplications(): Promise<readonly Application[]> {
 
 export async function getApplication(
   id: string,
+  userId: string,
 ): Promise<Application | null> {
-  const record = await prisma.application.findUnique({
-    where: { id },
+  const record = await prisma.application.findFirst({
+    where: { id, userId },
   });
 
   return record ? toApplication(record) : null;
 }
 
 export async function createApplication(
+  userId: string,
   input: ApplicationInput,
 ): Promise<Application> {
   const record = await prisma.application.create({
@@ -63,6 +68,7 @@ export async function createApplication(
       workMode: input.workMode,
       appliedAt: toDatabaseDate(input.appliedAt),
       technologies: [...input.technologies],
+      userId,
     },
   });
 
@@ -71,8 +77,18 @@ export async function createApplication(
 
 export async function updateApplication(
   id: string,
+  userId: string,
   input: ApplicationInput,
-): Promise<Application> {
+): Promise<Application | null> {
+  const existingRecord = await prisma.application.findFirst({
+    where: { id, userId },
+    select: { id: true },
+  });
+
+  if (!existingRecord) {
+    return null;
+  }
+
   const record = await prisma.application.update({
     where: { id },
     data: {
@@ -87,4 +103,15 @@ export async function updateApplication(
   });
 
   return toApplication(record);
+}
+
+export async function deleteApplication(
+  id: string,
+  userId: string,
+): Promise<boolean> {
+  const result = await prisma.application.deleteMany({
+    where: { id, userId },
+  });
+
+  return result.count === 1;
 }
