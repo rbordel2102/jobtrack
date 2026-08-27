@@ -12,7 +12,12 @@ if (!baseURL) {
 export default defineConfig({
   forbidOnly: Boolean(process.env.CI),
   fullyParallel: false,
-  reporter: process.env.CI ? "github" : "list",
+  reporter: process.env.CI
+    ? [
+        ["github"],
+        ["html", { outputFolder: "playwright-report", open: "never" }],
+      ]
+    : "list",
   retries: process.env.CI ? 1 : 0,
   testDir: "./tests/e2e",
   use: {
