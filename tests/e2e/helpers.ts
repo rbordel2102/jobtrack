@@ -16,6 +16,8 @@ export interface TestApplication {
   updatedCompany: string;
 }
 
+const registrationTimeout = 15_000;
+
 function createUniqueSuffix(testId: string): string {
   const readableTestId = testId.replace(/[^a-z0-9]/gi, "").toLowerCase();
 
@@ -51,10 +53,26 @@ export async function registerUser(page: Page, user: TestUser): Promise<void> {
   await page.getByLabel("Contraseña").fill(user.password);
   await page.getByRole("button", { name: "Crear cuenta" }).click();
 
-  await expect(page).toHaveURL(/\/$/);
+  try {
+    await expect(page).toHaveURL(/\/$/, { timeout: registrationTimeout });
+  } catch (error: unknown) {
+    const registrationError = page.getByRole("alert");
+
+    if (await registrationError.isVisible()) {
+      const message = (await registrationError.textContent())?.trim();
+
+      throw new Error(
+        `El registro ha devuelto un error${message ? `: ${message}` : "."}`,
+        { cause: error },
+      );
+    }
+
+    throw error;
+  }
+
   await expect(
     page.getByRole("heading", { name: "Panel" }),
-  ).toBeVisible();
+  ).toBeVisible({ timeout: registrationTimeout });
 }
 
 export async function loginUser(page: Page, user: TestUser): Promise<void> {
