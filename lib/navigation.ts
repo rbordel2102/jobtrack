@@ -21,6 +21,6 @@ export const navigationItems = [
     icon: "briefcase",
     href: "/applications",
   },
-  { id: "analytics", label: "Analíticas", icon: "chart" },
+  { id: "analytics", label: "Analíticas", icon: "chart", href: "/analytics" },
   { id: "settings", label: "Configuración", icon: "settings" },
 ] satisfies readonly NavigationItem[];
