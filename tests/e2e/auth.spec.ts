@@ -40,7 +40,13 @@ test("logout cierra la sesión y deja protegidas las rutas", async ({
 });
 
 base("las rutas protegidas redirigen a login sin sesión", async ({ page }) => {
-  for (const route of ["/", "/applications", "/applications/new"]) {
+  for (const route of [
+    "/",
+    "/applications",
+    "/applications/new",
+    "/analytics",
+    "/analytics/offer",
+  ]) {
     await page.goto(route);
     await expect(page).toHaveURL(/\/login$/);
   }

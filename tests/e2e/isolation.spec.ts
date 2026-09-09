@@ -39,6 +39,10 @@ base("un usuario no ve candidaturas de otro usuario", async ({
     await userBPage.goto("/applications");
 
     await expect(userBPage.getByText(application.company)).not.toBeVisible();
+    await userBPage.goto("/analytics");
+    await expect(userBPage.getByRole("status")).toContainText(
+      "Todavía no hay candidaturas",
+    );
   } finally {
     await closeAndCleanUsers(userBContext, [userA, userB]);
   }

@@ -22,6 +22,7 @@ jobs:
       TEST_BETTER_AUTH_SECRET: ${{ secrets.TEST_BETTER_AUTH_SECRET }}
       TEST_BETTER_AUTH_URL: http://127.0.0.1:3100
       JOBTRACK_TEST_MODE: "true"
+      JOBTRACK_AI_PROVIDER: "local"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
