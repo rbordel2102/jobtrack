@@ -25,6 +25,7 @@ RUN DATABASE_URL=postgresql://ci:ci@localhost:5432/jobtrack \
   DIRECT_URL=postgresql://ci:ci@localhost:5432/jobtrack \
   BETTER_AUTH_SECRET=ci-build-only-secret \
   BETTER_AUTH_URL=http://localhost:3000 \
+  JOBTRACK_STANDALONE_BUILD=true \
   npm run build \
   && find .next/standalone -type f -name '.env*' -delete
 
