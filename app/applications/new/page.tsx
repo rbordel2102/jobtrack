@@ -13,7 +13,6 @@ export default async function NewApplicationRoute() {
       headerDescription="Añade una nueva oportunidad a tu proceso de búsqueda."
       headerEyebrow="Proceso"
       headerTitle="Nueva candidatura"
-      userEmail={session.user.email}
       userName={session.user.name}
     >
       <ApplicationForm

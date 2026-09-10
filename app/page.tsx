@@ -19,7 +19,6 @@ export default async function Home() {
         activeNavigationItem="dashboard"
         headerEyebrow="Resumen"
         headerTitle="Panel"
-        userEmail={session.user.email}
         userName={session.user.name}
       >
         <p
@@ -38,7 +37,6 @@ export default async function Home() {
       activeNavigationItem="dashboard"
       headerEyebrow="Resumen"
       headerTitle="Panel"
-      userEmail={session.user.email}
       userName={session.user.name}
     >
       <Dashboard

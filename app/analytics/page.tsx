@@ -19,7 +19,6 @@ export default async function AnalyticsRoute() {
         headerDescription="Revisa los datos actuales de tu búsqueda de empleo."
         headerEyebrow="Analíticas"
         headerTitle="Analíticas"
-        userEmail={session.user.email}
         userName={session.user.name}
       >
         <p
@@ -38,7 +37,6 @@ export default async function AnalyticsRoute() {
       headerDescription="Revisa los datos actuales de tu búsqueda de empleo."
       headerEyebrow="Analíticas"
       headerTitle="Analíticas"
-      userEmail={session.user.email}
       userName={session.user.name}
     >
       <AnalyticsPage summary={summary} />

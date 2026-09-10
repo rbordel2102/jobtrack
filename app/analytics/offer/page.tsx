@@ -18,7 +18,6 @@ export default async function OfferAnalysisRoute() {
       headerDescription="Extrae información útil de una oferta antes de aplicar."
       headerEyebrow="Analíticas"
       headerTitle="Analizar oferta"
-      userEmail={session.user.email}
       userName={session.user.name}
     >
       <div className="mx-auto max-w-4xl">

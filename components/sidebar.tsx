@@ -53,7 +53,7 @@ export function Sidebar({ activeNavigationItem }: SidebarProps) {
   return (
     <aside
       aria-label="Barra lateral"
-      className="sticky top- hidden h-screen w-70 shrink-0 flex-col border-r border-slate-200 bg-white lg:flex"
+      className="sticky top-0 hidden h-screen w-70 shrink-0 flex-col border-r border-slate-200 bg-white lg:flex"
     >
       <div className="flex h-full flex-col px-4 py-5">
         <Link

@@ -14,7 +14,10 @@ base("registro crea una cuenta y abre el panel", async ({ page }, testInfo) => {
 
   try {
     await registerUser(page, user);
-    await expect(page.getByText(user.name)).toBeVisible();
+    const firstName = user.name.trim().split(/\s+/)[0] ?? user.name;
+    await expect(
+      page.getByRole("banner").getByText(firstName, { exact: true }),
+    ).toBeVisible();
   } finally {
     await deleteTestUserByEmail(user.email);
   }
@@ -32,7 +35,10 @@ test("logout cierra la sesión y deja protegidas las rutas", async ({
   page,
   testUser,
 }) => {
-  await expect(page.getByText(testUser.name)).toBeVisible();
+  const firstName = testUser.name.trim().split(/\s+/)[0] ?? testUser.name;
+  await expect(
+    page.getByRole("banner").getByText(firstName, { exact: true }),
+  ).toBeVisible();
   await logoutUser(page);
 
   await page.goto("/");
@@ -46,6 +52,7 @@ base("las rutas protegidas redirigen a login sin sesión", async ({ page }) => {
     "/applications/new",
     "/analytics",
     "/analytics/offer",
+    "/settings",
   ]) {
     await page.goto(route);
     await expect(page).toHaveURL(/\/login$/);

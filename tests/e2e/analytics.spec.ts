@@ -1,7 +1,7 @@
 import { expect, test } from "./fixtures";
 import { createApplication, createTestApplication } from "./helpers";
 
-test("muestra el pipeline actual del usuario", async ({ page, testUser }, testInfo) => {
+test("muestra la distribución actual del usuario", async ({ page, testUser }, testInfo) => {
   void testUser;
   const application = createTestApplication(testInfo.testId);
 
@@ -11,7 +11,9 @@ test("muestra el pipeline actual del usuario", async ({ page, testUser }, testIn
   await expect(
     page.getByRole("heading", { name: "Indicadores actuales" }),
   ).toBeVisible();
-  await expect(page.getByText("Actualmente aplicadas")).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Distribución por estado" }),
+  ).toBeVisible();
   await expect(page.getByText("Actualmente en entrevista").first()).toBeVisible();
   await expect(
     page.getByRole("link", { name: "Analizar una oferta" }),

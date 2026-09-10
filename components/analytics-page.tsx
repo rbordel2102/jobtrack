@@ -87,13 +87,6 @@ export function AnalyticsPage({ summary }: AnalyticsPageProps) {
     ...item,
     label: applicationStatusLabels[item.status],
   }));
-  const pipelineLabels = [
-    "Actualmente aplicadas",
-    "Actualmente en entrevista",
-    "Actualmente en prueba técnica",
-    "Actualmente en oferta",
-    "Actualmente rechazadas",
-  ];
 
   return (
     <div className="space-y-8">
@@ -243,86 +236,43 @@ export function AnalyticsPage({ summary }: AnalyticsPageProps) {
         </section>
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
-        <section
-          aria-labelledby="technology-frequency-heading"
-          className="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6"
-        >
-          <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
-              Palabras registradas
-            </p>
-            <h2
-              className="mt-1 text-lg font-semibold tracking-tight text-slate-950"
-              id="technology-frequency-heading"
-            >
-              Tecnologías más frecuentes
-            </h2>
+      <section
+        aria-labelledby="technology-frequency-heading"
+        className="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6"
+      >
+        <div>
+          <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+            Palabras registradas
+          </p>
+          <h2
+            className="mt-1 text-lg font-semibold tracking-tight text-slate-950"
+            id="technology-frequency-heading"
+          >
+            Tecnologías más frecuentes
+          </h2>
+        </div>
+        {summary.technologies.length === 0 ? (
+          <div className="mt-6">
+            <EmptyState message="No hay tecnologías registradas todavía." />
           </div>
-          {summary.technologies.length === 0 ? (
-            <div className="mt-6">
-              <EmptyState message="No hay tecnologías registradas todavía." />
-            </div>
-          ) : (
-            <ul className="mt-6 grid gap-3 sm:grid-cols-2">
-              {summary.technologies.slice(0, 10).map((technology) => (
-                <li
-                  className="flex items-center justify-between gap-4 rounded-xl bg-slate-50 px-4 py-3"
-                  key={technology.name}
-                >
-                  <span className="min-w-0 break-words text-sm font-medium text-slate-700">
-                    {technology.name}
-                  </span>
-                  <span className="shrink-0 text-sm font-semibold text-slate-950">
-                    {technology.count}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
-
-        <section
-          aria-labelledby="pipeline-heading"
-          className="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6"
-        >
-          <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
-              Snapshot del proceso
-            </p>
-            <h2
-              className="mt-1 text-lg font-semibold tracking-tight text-slate-950"
-              id="pipeline-heading"
-            >
-              Pipeline actual
-            </h2>
-            <p className="mt-2 text-sm leading-6 text-slate-500">
-              Cada cifra refleja el estado actual guardado, no una etapa
-              histórica alcanzada.
-            </p>
-          </div>
-          <ol className="mt-6 space-y-3">
-            {summary.pipeline.map((item, index) => (
+        ) : (
+          <ul className="mt-6 grid gap-3 sm:grid-cols-2">
+            {summary.technologies.slice(0, 10).map((technology) => (
               <li
-                className="flex items-center justify-between gap-4 rounded-xl border border-slate-100 px-4 py-3"
-                key={item.status}
+                className="flex items-center justify-between gap-4 rounded-xl bg-slate-50 px-4 py-3"
+                key={technology.name}
               >
-                <span className="flex min-w-0 items-center gap-3 text-sm font-medium text-slate-700">
-                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-100 text-xs font-semibold text-slate-500">
-                    {index + 1}
-                  </span>
-                  <span className="break-words">
-                    {pipelineLabels[index] ?? applicationStatusLabels[item.status]}
-                  </span>
+                <span className="min-w-0 break-words text-sm font-medium text-slate-700">
+                  {technology.name}
                 </span>
-                <span className="shrink-0 text-lg font-semibold text-slate-950">
-                  {item.count}
+                <span className="shrink-0 text-sm font-semibold text-slate-950">
+                  {technology.count}
                 </span>
               </li>
             ))}
-          </ol>
-        </section>
-      </div>
+          </ul>
+        )}
+      </section>
 
       <section
         aria-labelledby="monthly-evolution-heading"

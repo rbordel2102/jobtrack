@@ -20,7 +20,7 @@ function createApplication(
 }
 
 describe("analytics utils", () => {
-  it("calcula el pipeline actual y las tasas sin inferir conversiones", () => {
+  it("calcula la distribución actual y las tasas sin inferir conversiones", () => {
     const summary = getAnalyticsSummary([
       createApplication(),
       createApplication({ status: "interview", workMode: "hybrid" }),

@@ -51,7 +51,6 @@ export default async function ApplicationsRoute({
       headerDescription="Organiza el progreso de cada oportunidad y mantén claros tus próximos pasos."
       headerEyebrow="Proceso"
       headerTitle="Candidaturas"
-      userEmail={session.user.email}
       userName={session.user.name}
     >
       <ApplicationsPage

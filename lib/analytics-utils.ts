@@ -161,6 +161,5 @@ export function getAnalyticsSummary(
     workModeCounts: getWorkModeCounts(applications),
     technologies: getTechnologyFrequencies(applications),
     monthlyApplications: getMonthlyApplications(applications),
-    pipeline: statusCounts,
   };
 }

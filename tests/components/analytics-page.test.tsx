@@ -22,17 +22,10 @@ const summary: AnalyticsSummary = {
   ],
   technologies: [{ name: "React", count: 2 }],
   monthlyApplications: [{ month: "2026-08", label: "ago 2026", count: 2 }],
-  pipeline: [
-    { status: "applied", count: 1, percentage: 50 },
-    { status: "interview", count: 1, percentage: 50 },
-    { status: "technical_test", count: 0, percentage: 0 },
-    { status: "offer", count: 0, percentage: 0 },
-    { status: "rejected", count: 0, percentage: 0 },
-  ],
 };
 
 describe("AnalyticsPage", () => {
-  it("muestra métricas, pipeline actual y enlace al análisis de ofertas", () => {
+  it("muestra métricas y enlace al análisis de ofertas", () => {
     render(<AnalyticsPage summary={summary} />);
 
     expect(
@@ -40,7 +33,8 @@ describe("AnalyticsPage", () => {
     ).toBeInTheDocument();
     expect(screen.getAllByText("Actualmente en entrevista").length).toBeGreaterThan(0);
     expect(screen.getAllByText("Actualmente en oferta").length).toBeGreaterThan(0);
-    expect(screen.getByText("Pipeline actual")).toBeInTheDocument();
+    expect(screen.getByText("Distribución por estado")).toBeInTheDocument();
+    expect(screen.queryByText("Pipeline actual")).not.toBeInTheDocument();
     expect(
       screen.getByRole("link", { name: "Analizar una oferta" }),
     ).toHaveAttribute("href", "/analytics/offer");
@@ -66,11 +60,6 @@ describe("AnalyticsPage", () => {
           })),
           technologies: [],
           monthlyApplications: [],
-          pipeline: summary.pipeline.map((item) => ({
-            ...item,
-            count: 0,
-            percentage: null,
-          })),
         }}
       />,
     );

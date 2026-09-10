@@ -38,5 +38,4 @@ export interface AnalyticsSummary {
   workModeCounts: readonly AnalyticsWorkModeCount[];
   technologies: readonly TechnologyFrequency[];
   monthlyApplications: readonly MonthlyApplicationCount[];
-  pipeline: readonly AnalyticsStatusCount[];
 }

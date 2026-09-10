@@ -11,7 +11,6 @@ interface AppShellProps {
   headerDescription?: string;
   headerEyebrow: string;
   headerTitle: string;
-  userEmail: string;
   userName: string;
 }
 
@@ -21,7 +20,6 @@ export function AppShell({
   headerDescription,
   headerEyebrow,
   headerTitle,
-  userEmail,
   userName,
 }: AppShellProps) {
   return (
@@ -33,7 +31,6 @@ export function AppShell({
           description={headerDescription}
           eyebrow={headerEyebrow}
           title={headerTitle}
-          userEmail={userEmail}
           userName={userName}
         />
         <main className="mx-auto w-full max-w-[1500px] px-4 py-7 sm:px-6 sm:py-8 lg:px-8 lg:py-10">

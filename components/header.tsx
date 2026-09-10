@@ -1,12 +1,14 @@
-import { Icon } from "@/components/icon";
 import { LogoutButton } from "@/components/logout-button";
 
 interface HeaderProps {
   description?: string;
   eyebrow: string;
   title: string;
-  userEmail: string;
   userName: string;
+}
+
+function getFirstName(name: string): string {
+  return name.trim().split(/\s+/).filter(Boolean)[0] || "Usuario";
 }
 
 function getUserInitials(name: string): string {
@@ -26,13 +28,14 @@ export function Header({
   description,
   eyebrow,
   title,
-  userEmail,
   userName,
 }: HeaderProps) {
+  const firstName = getFirstName(userName);
+
   return (
     <header className="border-b border-slate-200 bg-white">
-      <div className="mx-auto flex min-h-[88px] w-full max-w-[1500px] items-center justify-between gap-6 px-4 py-5 sm:px-6 lg:px-8">
-        <div>
+      <div className="mx-auto flex min-h-[88px] w-full max-w-[1500px] items-center justify-between gap-4 px-4 py-5 sm:gap-6 sm:px-6 lg:px-8">
+        <div className="min-w-0">
           <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">
             {eyebrow}
           </p>
@@ -46,22 +49,11 @@ export function Header({
           ) : null}
         </div>
 
-        <div className="flex items-center gap-3 sm:gap-5">
-          <div
-            aria-hidden="true"
-            className="hidden h-10 items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-400 md:flex"
-          >
-            <Icon className="h-4 w-4" name="search" />
-            <span>Buscar</span>
-            <kbd className="ml-5 rounded-md border border-slate-200 bg-white px-1.5 py-0.5 text-[10px] font-medium text-slate-400">
-              ⌘ K
-            </kbd>
-          </div>
-          <div className="hidden text-right sm:block">
-            <p className="max-w-40 truncate text-sm font-semibold text-slate-950">
-              {userName}
+        <div className="flex shrink-0 items-center gap-2 sm:gap-4">
+          <div className="min-w-0 max-w-24 text-right sm:max-w-32">
+            <p className="truncate text-sm font-semibold text-slate-950">
+              {firstName}
             </p>
-            <p className="max-w-40 truncate text-xs text-slate-400">{userEmail}</p>
           </div>
           <span
             aria-label={`Perfil de ${userName}`}

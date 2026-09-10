@@ -67,7 +67,6 @@ export default async function EditApplicationRoute({
       headerDescription="Revisa y actualiza la información de esta oportunidad."
       headerEyebrow="Proceso"
       headerTitle="Editar candidatura"
-      userEmail={session.user.email}
       userName={session.user.name}
     >
       {loadError ? (
